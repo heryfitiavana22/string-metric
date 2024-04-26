@@ -10,14 +10,17 @@ function damerauLevenshtein(M, P) {
       } else {
         const costSubstitution = M[i - 1] === P[j - 1] ? 0 : 1;
 
+        matrix[i].push(
+          Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + costSubstitution
+          )
+        );
         if (i > 1 && j > 1 && M[i - 1] === P[j - 2] && M[i - 2] === P[j - 1]) {
-          matrix[i].push(
-            Math.min(matrix[i][j] || 0, matrix[i - 2][j - 2]) + costSubstitution
-          );
-        } else {
-          matrix[i].push(
-            Math.min(matrix[i - 1][j], matrix[i][j - 1], matrix[i - 1][j - 1]) +
-              costSubstitution
+          matrix[i][j] = Math.min(
+            matrix[i][j],
+            matrix[i - 2][j - 2] + costSubstitution
           );
         }
       }
