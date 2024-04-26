@@ -1,26 +1,42 @@
 function jarowinkler(s1, s2) {
-  console.log(`La similarite entre ${s1} et ${s2} : `);
-  const matrix = [];
+  console.log(`La similarite "entre ${s1}" et "${s2}" : `);
   const p = 0.1;
   let m = 0;
   let transposition = 0;
   let commonPrefix = 0;
   let hasCommonPrefix = true;
+  const maxLength = Math.max(s1.length, s2.length);
+  let matchsS1 = Array(maxLength).fill(0);
+  let matchsS2 = Array(maxLength).fill(0);
+
   const maxDistance = Math.max(s1.length, s2.length) / 2 - 1;
   for (let i = 0; i < s1.length; i++) {
-    matrix[i] = [];
-    const reversedPair = s1[i + 1] + s1[i];
-    for (let j = 0; j < s2.length; j++) {
-      // correspondant et ne depasse pas le maximum d'eloignment
-      if (s1[i] == s2[j] && Math.abs(j - i) <= maxDistance) {
-        matrix[i].push(1);
+    // correspondant et ne depasse pas le maximum d'eloignment
+    // difference de i et j <= maxDistance
+    const min = Math.max(0, i - maxDistance);
+    const max = Math.min(s2.length, i + maxDistance + 1);
+    for (let j = min; j < max; j++) {
+      if (s1[i] == s2[j] && matchsS2[j] == 0) {
+        matchsS1[i] = 1;
+        matchsS2[j] = 1;
         m++;
-      } else matrix[i].push(0);
+        break;
+      }
     }
-    if (s2.includes(reversedPair)) transposition += 2;
+    // if (s2.includes(reversedPair)) transposition += 2;
     if (hasCommonPrefix && s1[i] == s2[i] && commonPrefix < 4) commonPrefix++;
     else hasCommonPrefix = false;
   }
+
+  let nextS2 = 0;
+  for (let i = 0; i < maxLength; i++) {
+    if (matchsS1[i]) {
+      while (matchsS2[nextS2] == 0) nextS2++;
+
+      if (s1[i] != s2[nextS2++]) transposition++;
+    }
+  }
+
   transposition /= 2;
 
   const a = m / s1.length;
